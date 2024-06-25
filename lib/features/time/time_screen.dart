@@ -13,10 +13,26 @@ class TimeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Time Screen'),
       ),
-      body: const Center(
-        child: Text("Hier soll die Uhrzeit stehen"),
+      body: Center(
+        child: StreamBuilder<DateTime>(
+          stream: timeRepository.dateTimeStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              final dateTime = snapshot.data!;
+              return Text(
+                '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else {
+              return const Text("Keine Daten verfügbar");
+            }
+          },
+        ),
       ),
     );
   }
